@@ -1,0 +1,611 @@
+[
+ {
+  "id": "a2flow",
+  "type": "tab",
+  "label": "SIS401 Assignment 2",
+  "disabled": false,
+  "info": "ESP32 -> Mosquitto -> Node-RED dashboard + ThingsBoard Cloud"
+ },
+ {
+  "id": "a2broker",
+  "type": "mqtt-broker",
+  "name": "Pi Mosquitto",
+  "broker": "localhost",
+  "port": "1883",
+  "clientid": "",
+  "autoConnect": true,
+  "usetls": false,
+  "protocolVersion": "4",
+  "keepalive": "60",
+  "cleansession": true,
+  "autoUnsubscribe": true,
+  "birthTopic": "",
+  "birthQos": "0",
+  "birthPayload": "",
+  "birthMsg": {},
+  "closeTopic": "",
+  "closeQos": "0",
+  "closePayload": "",
+  "closeMsg": {},
+  "willTopic": "",
+  "willQos": "0",
+  "willPayload": "",
+  "willMsg": {},
+  "userProps": "",
+  "sessionExpiry": ""
+ },
+ {
+  "id": "a2thingsboard",
+  "type": "mqtt-broker",
+  "name": "ThingsBoard Cloud",
+  "broker": "mqtt.thingsboard.cloud",
+  "port": "1883",
+  "clientid": "",
+  "autoConnect": true,
+  "usetls": false,
+  "protocolVersion": "4",
+  "keepalive": "60",
+  "cleansession": true,
+  "autoUnsubscribe": true,
+  "birthTopic": "",
+  "birthQos": "0",
+  "birthPayload": "",
+  "birthMsg": {},
+  "closeTopic": "",
+  "closeQos": "0",
+  "closePayload": "",
+  "closeMsg": {},
+  "willTopic": "",
+  "willQos": "0",
+  "willPayload": "",
+  "willMsg": {},
+  "userProps": "",
+  "sessionExpiry": ""
+ },
+ {
+  "id": "a2tab",
+  "type": "ui_tab",
+  "name": "SIS401 Assignment 2",
+  "icon": "dashboard",
+  "order": 1,
+  "disabled": false,
+  "hidden": false
+ },
+ {
+  "id": "gEnv",
+  "type": "ui_group",
+  "name": "Environment",
+  "tab": "a2tab",
+  "order": 1,
+  "disp": true,
+  "width": "6",
+  "collapse": false,
+  "className": ""
+ },
+ {
+  "id": "gAI",
+  "type": "ui_group",
+  "name": "Edge AI and Device",
+  "tab": "a2tab",
+  "order": 2,
+  "disp": true,
+  "width": "6",
+  "collapse": false,
+  "className": ""
+ },
+ {
+  "id": "gCtl",
+  "type": "ui_group",
+  "name": "Remote Actuation",
+  "tab": "a2tab",
+  "order": 3,
+  "disp": true,
+  "width": "6",
+  "collapse": false,
+  "className": ""
+ },
+ {
+  "id": "inSensors",
+  "type": "mqtt in",
+  "z": "a2flow",
+  "name": "assignment2/sensors/data",
+  "topic": "assignment2/sensors/data",
+  "qos": "0",
+  "datatype": "json",
+  "broker": "a2broker",
+  "nl": false,
+  "rap": true,
+  "rh": 0,
+  "inputs": 0,
+  "x": 190,
+  "y": 80,
+  "wires": [
+   [
+    "fnSplit",
+    "fnTB"
+   ]
+  ]
+ },
+ {
+  "id": "fnSplit",
+  "type": "function",
+  "z": "a2flow",
+  "name": "Split sensor JSON",
+  "func": "// One JSON message in, one message per sensor out (gauges + chart series)\nconst d = msg.payload;\nconst t = { topic: 'Temperature (°C)', payload: Number(d.temperature) };\nconst h = { topic: 'Humidity (%)',     payload: Number(d.humidity) };\nconst l = { topic: 'Light (%)',        payload: Number(d.light) };\nreturn [[t], [h], [l], [t, h, l]];",
+  "outputs": 4,
+  "timeout": 0,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": [],
+  "x": 470,
+  "y": 80,
+  "wires": [
+   [
+    "gTemp"
+   ],
+   [
+    "gHum"
+   ],
+   [
+    "gLight"
+   ],
+   [
+    "chart"
+   ]
+  ]
+ },
+ {
+  "id": "gTemp",
+  "type": "ui_gauge",
+  "z": "a2flow",
+  "name": "Temperature",
+  "group": "gEnv",
+  "order": 1,
+  "width": "2",
+  "height": "3",
+  "gtype": "gage",
+  "title": "Temperature",
+  "label": "°C",
+  "format": "{{value}}",
+  "min": 0,
+  "max": "50",
+  "colors": [
+   "#00b500",
+   "#e6e600",
+   "#ca3838"
+  ],
+  "seg1": "",
+  "seg2": "",
+  "diff": false,
+  "className": "",
+  "x": 760,
+  "y": 40,
+  "wires": []
+ },
+ {
+  "id": "gHum",
+  "type": "ui_gauge",
+  "z": "a2flow",
+  "name": "Humidity",
+  "group": "gEnv",
+  "order": 2,
+  "width": "2",
+  "height": "3",
+  "gtype": "gage",
+  "title": "Humidity",
+  "label": "%",
+  "format": "{{value}}",
+  "min": 0,
+  "max": "100",
+  "colors": [
+   "#ca3838",
+   "#00b500",
+   "#0000ff"
+  ],
+  "seg1": "",
+  "seg2": "",
+  "diff": false,
+  "className": "",
+  "x": 760,
+  "y": 80,
+  "wires": []
+ },
+ {
+  "id": "gLight",
+  "type": "ui_gauge",
+  "z": "a2flow",
+  "name": "Light",
+  "group": "gEnv",
+  "order": 3,
+  "width": "2",
+  "height": "3",
+  "gtype": "gage",
+  "title": "Light",
+  "label": "%",
+  "format": "{{value}}",
+  "min": 0,
+  "max": "100",
+  "colors": [
+   "#333333",
+   "#e6e600",
+   "#ffff99"
+  ],
+  "seg1": "",
+  "seg2": "",
+  "diff": false,
+  "className": "",
+  "x": 760,
+  "y": 120,
+  "wires": []
+ },
+ {
+  "id": "chart",
+  "type": "ui_chart",
+  "z": "a2flow",
+  "name": "Sensor history",
+  "group": "gEnv",
+  "order": 4,
+  "width": "6",
+  "height": "4",
+  "label": "Sensor history (last 10 min)",
+  "chartType": "line",
+  "legend": "true",
+  "xformat": "HH:mm:ss",
+  "interpolate": "linear",
+  "nodata": "waiting for data",
+  "dot": false,
+  "ymin": "0",
+  "ymax": "100",
+  "removeOlder": "10",
+  "removeOlderPoints": "",
+  "removeOlderUnit": "60",
+  "cutout": 0,
+  "useOneColor": false,
+  "useUTC": false,
+  "colors": [
+   "#d62728",
+   "#1f77b4",
+   "#e6b800",
+   "#2ca02c",
+   "#98df8a",
+   "#d62728",
+   "#ff9896",
+   "#9467bd",
+   "#c5b0d5"
+  ],
+  "outputs": 1,
+  "useDifferentColor": false,
+  "className": "",
+  "x": 770,
+  "y": 160,
+  "wires": [
+   []
+  ]
+ },
+ {
+  "id": "inAI",
+  "type": "mqtt in",
+  "z": "a2flow",
+  "name": "assignment2/ai/classification",
+  "topic": "assignment2/ai/classification",
+  "qos": "0",
+  "datatype": "json",
+  "broker": "a2broker",
+  "nl": false,
+  "rap": true,
+  "rh": 0,
+  "inputs": 0,
+  "x": 190,
+  "y": 240,
+  "wires": [
+   [
+    "fnAI",
+    "fnTB"
+   ]
+  ]
+ },
+ {
+  "id": "fnAI",
+  "type": "function",
+  "z": "a2flow",
+  "name": "Format AI result",
+  "func": "const p = msg.payload;\nmsg.payload = p.label + '  (' + Math.round(Number(p.confidence) * 100) + '%)';\nreturn msg;",
+  "outputs": 1,
+  "timeout": 0,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": [],
+  "x": 470,
+  "y": 240,
+  "wires": [
+   [
+    "txtAI"
+   ]
+  ]
+ },
+ {
+  "id": "txtAI",
+  "type": "ui_text",
+  "z": "a2flow",
+  "group": "gAI",
+  "order": 1,
+  "width": "6",
+  "height": "1",
+  "name": "Edge AI condition",
+  "label": "Edge AI condition",
+  "format": "{{msg.payload}}",
+  "layout": "row-spread",
+  "className": "",
+  "style": false,
+  "font": "",
+  "fontSize": 16,
+  "color": "#000000",
+  "x": 760,
+  "y": 240,
+  "wires": []
+ },
+ {
+  "id": "inStatus",
+  "type": "mqtt in",
+  "z": "a2flow",
+  "name": "assignment2/device/status",
+  "topic": "assignment2/device/status",
+  "qos": "0",
+  "datatype": "utf8",
+  "broker": "a2broker",
+  "nl": false,
+  "rap": true,
+  "rh": 0,
+  "inputs": 0,
+  "x": 190,
+  "y": 290,
+  "wires": [
+   [
+    "txtStatus"
+   ]
+  ]
+ },
+ {
+  "id": "txtStatus",
+  "type": "ui_text",
+  "z": "a2flow",
+  "group": "gAI",
+  "order": 2,
+  "width": "6",
+  "height": "1",
+  "name": "ESP32 status",
+  "label": "ESP32 status",
+  "format": "{{msg.payload}}",
+  "layout": "row-spread",
+  "className": "",
+  "style": false,
+  "font": "",
+  "fontSize": 16,
+  "color": "#000000",
+  "x": 760,
+  "y": 290,
+  "wires": []
+ },
+ {
+  "id": "inState",
+  "type": "mqtt in",
+  "z": "a2flow",
+  "name": "assignment2/actuator/state",
+  "topic": "assignment2/actuator/state",
+  "qos": "0",
+  "datatype": "json",
+  "broker": "a2broker",
+  "nl": false,
+  "rap": true,
+  "rh": 0,
+  "inputs": 0,
+  "x": 190,
+  "y": 340,
+  "wires": [
+   [
+    "fnState",
+    "fnTB"
+   ]
+  ]
+ },
+ {
+  "id": "fnState",
+  "type": "function",
+  "z": "a2flow",
+  "name": "Format ack",
+  "func": "const s = msg.payload;\nmsg.payload = 'Servo ' + s.servo + '°  |  LED ' + (s.led ? 'ON' : 'OFF');\nreturn msg;",
+  "outputs": 1,
+  "timeout": 0,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": [],
+  "x": 470,
+  "y": 340,
+  "wires": [
+   [
+    "txtState"
+   ]
+  ]
+ },
+ {
+  "id": "txtState",
+  "type": "ui_text",
+  "z": "a2flow",
+  "group": "gCtl",
+  "order": 3,
+  "width": "6",
+  "height": "1",
+  "name": "Confirmed state (ack)",
+  "label": "Confirmed state (ack)",
+  "format": "{{msg.payload}}",
+  "layout": "row-spread",
+  "className": "",
+  "style": false,
+  "font": "",
+  "fontSize": 16,
+  "color": "#000000",
+  "x": 760,
+  "y": 340,
+  "wires": []
+ },
+ {
+  "id": "slider",
+  "type": "ui_slider",
+  "z": "a2flow",
+  "name": "Servo angle",
+  "label": "Servo angle (0-180°)",
+  "tooltip": "",
+  "group": "gCtl",
+  "order": 1,
+  "width": "6",
+  "height": "1",
+  "passthru": false,
+  "outs": "end",
+  "topic": "",
+  "topicType": "str",
+  "min": 0,
+  "max": "180",
+  "step": 1,
+  "className": "",
+  "x": 160,
+  "y": 420,
+  "wires": [
+   [
+    "fnServoCmd"
+   ]
+  ]
+ },
+ {
+  "id": "fnServoCmd",
+  "type": "function",
+  "z": "a2flow",
+  "name": "Servo command",
+  "func": "msg.payload = { servo: Number(msg.payload) };\nreturn msg;",
+  "outputs": 1,
+  "timeout": 0,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": [],
+  "x": 470,
+  "y": 420,
+  "wires": [
+   [
+    "outCmd"
+   ]
+  ]
+ },
+ {
+  "id": "ledSwitch",
+  "type": "ui_switch",
+  "z": "a2flow",
+  "name": "LED",
+  "label": "LED",
+  "tooltip": "",
+  "group": "gCtl",
+  "order": 2,
+  "width": "6",
+  "height": "1",
+  "passthru": false,
+  "decouple": "false",
+  "topic": "",
+  "topicType": "str",
+  "style": "",
+  "onvalue": "true",
+  "onvalueType": "bool",
+  "onicon": "",
+  "oncolor": "",
+  "offvalue": "false",
+  "offvalueType": "bool",
+  "officon": "",
+  "offcolor": "",
+  "animate": false,
+  "className": "",
+  "x": 150,
+  "y": 470,
+  "wires": [
+   [
+    "fnLedCmd"
+   ]
+  ]
+ },
+ {
+  "id": "fnLedCmd",
+  "type": "function",
+  "z": "a2flow",
+  "name": "LED command",
+  "func": "msg.payload = { led: msg.payload === true };\nreturn msg;",
+  "outputs": 1,
+  "timeout": 0,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": [],
+  "x": 470,
+  "y": 470,
+  "wires": [
+   [
+    "outCmd"
+   ]
+  ]
+ },
+ {
+  "id": "outCmd",
+  "type": "mqtt out",
+  "z": "a2flow",
+  "name": "assignment2/actuator/command",
+  "topic": "assignment2/actuator/command",
+  "qos": "1",
+  "retain": "false",
+  "respTopic": "",
+  "contentType": "",
+  "userProps": "",
+  "correl": "",
+  "expiry": "",
+  "broker": "a2broker",
+  "x": 760,
+  "y": 445,
+  "wires": []
+ },
+ {
+  "id": "fnTB",
+  "type": "function",
+  "z": "a2flow",
+  "name": "Format for ThingsBoard",
+  "func": "// Map each local topic onto flat ThingsBoard telemetry keys\nconst p = msg.payload;\nswitch (msg.topic) {\n  case 'assignment2/sensors/data':\n    msg.payload = { temperature: Number(p.temperature), humidity: Number(p.humidity), light: Number(p.light) };\n    break;\n  case 'assignment2/ai/classification':\n    msg.payload = { ai_label: p.label, ai_confidence: Number(p.confidence) };\n    break;\n  case 'assignment2/actuator/state':\n    msg.payload = { servo_angle: Number(p.servo), led_on: p.led === true };\n    break;\n  default:\n    return null;\n}\nmsg.topic = 'v1/devices/me/telemetry';\nreturn msg;",
+  "outputs": 1,
+  "timeout": 0,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": [],
+  "x": 470,
+  "y": 540,
+  "wires": [
+   [
+    "outTB"
+   ]
+  ]
+ },
+ {
+  "id": "outTB",
+  "type": "mqtt out",
+  "z": "a2flow",
+  "name": "ThingsBoard telemetry",
+  "topic": "v1/devices/me/telemetry",
+  "qos": "1",
+  "retain": "false",
+  "respTopic": "",
+  "contentType": "",
+  "userProps": "",
+  "correl": "",
+  "expiry": "",
+  "broker": "a2thingsboard",
+  "x": 770,
+  "y": 540,
+  "wires": []
+ }
+]
