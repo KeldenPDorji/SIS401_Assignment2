@@ -1,4 +1,4 @@
-# SIS401 Assignment 2 — IoT Data Pipeline
+# SIS401 Assignment 2 - IoT Data Pipeline
 
 **Cloud ingestion · real-time dashboard · remote actuation · Edge AI**
 
@@ -57,7 +57,7 @@ acknowledgement topic.
 | Part | Choice |
 |---|---|
 | Microcontroller | ESP32 DevKit |
-| Sensors | DHT22 (temperature, humidity) — digital · LDR module (light) — analog |
+| Sensors | DHT22 (temperature, humidity) - digital · LDR module (light) - analog |
 | Actuators | MG90S servo · LED |
 | Broker | Mosquitto 2.0 on Raspberry Pi 4 |
 | Dashboard | Node-RED 5 + node-red-dashboard |
@@ -97,7 +97,7 @@ change without reflashing it.
 <table>
   <tr>
     <th>LED off</th>
-    <th>LED on — switched from the dashboard</th>
+    <th>LED on - switched from the dashboard</th>
   </tr>
   <tr>
     <td><img src="docs/a2_hardware_led_off.jpeg" width="380" alt="Circuit with LED off"></td>
@@ -142,7 +142,7 @@ commands from the dashboard, and an acknowledgement after each one.
 - Node-RED publishes to `v1/devices/me/telemetry` on `mqtt.thingsboard.cloud`.
 - Telemetry keys: `temperature`, `humidity`, `light`, `ai_label`,
   `ai_confidence`, `servo_angle`, `led_on`.
-- **Alarm rule — High Temperature:** severity **Critical** when
+- **Alarm rule - High Temperature:** severity **Critical** when
   `temperature > 30`, cleared when `temperature <= 30`.
 
 <p align="center">
@@ -195,7 +195,7 @@ WiFi details, the broker IP and the ThingsBoard access token are **not
 committed**. Fill them in during the steps below.
 
 <details>
-<summary><b>1. Raspberry Pi — Mosquitto and Node-RED</b></summary>
+<summary><b>1. Raspberry Pi - Mosquitto and Node-RED</b></summary>
 
 ```bash
 sudo apt install -y mosquitto mosquitto-clients
