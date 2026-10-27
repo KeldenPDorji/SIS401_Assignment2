@@ -49,7 +49,7 @@ acknowledgement topic.
 ```
  DHT22 ─┐                                       ┌──► Node-RED dashboard (/ui)
  LDR  ──┼─► ESP32 ──MQTT──► Mosquitto (Pi) ─────┤
-        │     │  Edge AI                         └──► ThingsBoard Cloud
+        │     │  Edge AI                        └──► ThingsBoard Cloud
  Servo ◄┤     │  (Edge Impulse)                        telemetry + alarm rule
  LED   ◄┘     └──◄── assignment2/actuator/command ◄── dashboard slider / switch
 ```
